@@ -8,6 +8,13 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'i.wlycdn.com',
+        pathname: '/articles/**',
+      },
+    ],
   },
 }
 
