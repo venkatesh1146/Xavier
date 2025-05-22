@@ -38,30 +38,33 @@ A responsive, elegant frontend UI for a financial risk assessment agent designed
 ### Installation
 
 1. Clone the repository:
-   \`\`\`bash
+
+   ```bash
    git clone https://github.com/yourusername/financial-risk-assessment.git
    cd financial-risk-assessment
-   \`\`\`
+   ```
 
 2. Install dependencies:
-   \`\`\`bash
+
+   ```bash
    npm install
    # or
    yarn install
-   \`\`\`
+   ```
 
 3. Run the development server:
-   \`\`\`bash
+
+   ```bash
    npm run dev
    # or
    yarn dev
-   \`\`\`
+   ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
 ## Project Structure
 
-\`\`\`
+```code
 financial-risk-assessment/
 ├── app/                      # Next.js App Router
 │   ├── layout.tsx            # Root layout with theme provider
@@ -77,7 +80,7 @@ financial-risk-assessment/
 ├── public/                   # Static assets
 ├── tailwind.config.ts        # Tailwind configuration
 └── README.md                 # Project documentation
-\`\`\`
+```
 
 ## Component Architecture
 
@@ -108,7 +111,7 @@ The application is designed to integrate with a risk assessment API. Currently, 
 
 ### API Call Structure
 
-\`\`\`typescript
+```typescript
 // Example API call
 const result = await fetch('/api/risk-assessment', {
   method: 'POST',
@@ -122,7 +125,7 @@ const result = await fetch('/api/risk-assessment', {
 });
 
 const data = await result.json();
-\`\`\`
+```
 
 The API can return either a structured JSON object or HTML content that will be rendered directly in the results component.
 
@@ -133,9 +136,10 @@ The API can return either a structured JSON object or HTML content that will be 
 When adding new features to the project, please follow these guidelines:
 
 1. **Create a new branch**: Always create a feature branch for your work
-   \`\`\`bash
+
+   ```bash
    git checkout -b feature/your-feature-name
-   \`\`\`
+   ```
 
 2. **Follow the component structure**: Keep components modular and focused on a single responsibility
 
