@@ -1,0 +1,11 @@
+/node_modules
+.next
+
+/build
+/coverage
+/logs
+/temp
+/cache
+
+.DS_Store
+financial-risk-assessment.zip
