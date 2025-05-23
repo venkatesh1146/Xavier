@@ -1,0 +1,103 @@
+{
+    "risk_assessment": {
+        "risk_score": 7,
+        "risk_category": "Moderate",
+        "contributing_factors": [
+            "high concentration risk"
+        ],
+        "explanation": "Your risk assessment indicates you are a moderate investor. This is based on your risk score of 7/10 and factors including high concentration risk"
+    },
+    "portfolio_analysis": {
+        "diversity_score": 6,
+        "asset_count": 3,
+        "asset_allocation": {
+            "Equities (Stocks)": 55.56,
+            "Gold & Precious Metals": 22.22,
+            "Real Estate": 22.22
+        },
+        "risk_concentration": "concentrated in Equities (Stocks)",
+        "summary": "Your current portfolio shows concentrated in Equities (Stocks) allocation"
+    },
+    "comprehensive_recommendations": {
+        "status": "success",
+        "risk_category": "Moderate",
+        "time_horizon": "3-7 Years",
+        "lumpsum_available": false,
+        "emergency_fund_needed": 240000,
+        "suggested_sip_amount": 12500.0,
+        "suggested_lumpsum_amount": 0,
+        "primary_strategy": "SIP in Balanced Advantage, Hybrid MF + ELSS",
+        "recommended_products": [
+            {
+                "name": "Balanced Advantage Fund SIP",
+                "allocation": 45,
+                "description": "Systematic dynamic allocation",
+                "funds": [
+                    {
+                        "name": "HDFC Balanced Advantage Fund",
+                        "return": "8.50%",
+                        "description": "Dynamic asset allocation leader"
+                    },
+                    {
+                        "name": "ICICI Prudential Balanced Advantage Fund",
+                        "return": "9.00%",
+                        "description": "Tactical allocation expertise"
+                    }
+                ]
+            },
+            {
+                "name": "ELSS SIP",
+                "allocation": 30,
+                "description": "Tax-saving systematic investments",
+                "funds": [
+                    {
+                        "name": "Mirae Asset Tax Saver Fund",
+                        "return": "12.50%",
+                        "description": "Tax-saving equity with growth focus"
+                    },
+                    {
+                        "name": "Axis Long Term Equity Fund",
+                        "return": "13.00%",
+                        "description": "Consistent tax-saving performer"
+                    },
+                    {
+                        "name": "Aditya Birla Sun Life Tax Relief 96",
+                        "return": "13.50%",
+                        "description": "Long-term wealth creation with tax benefits"
+                    }
+                ]
+            },
+            {
+                "name": "Hybrid Fund SIP",
+                "allocation": 25,
+                "description": "Balanced debt-equity exposure"
+            }
+        ],
+        "investment_rationale": "This moderate strategy balances growth potential with reasonable safety while your medium time horizon allows for balanced growth with some stability. The systematic investment through SIPs provides disciplined wealth creation and rupee cost averaging."
+    },
+    "recommendations": {
+        "suggested_allocation": {
+            "Equities": 57.0,
+            "Fixed Income": 28.0,
+            "Cash": 10,
+            "Alternative Investments": 5
+        },
+        "equity_breakdown": {
+            "Large-cap stocks": 28.5,
+            "Mid-cap stocks": 14.2,
+            "Small-cap stocks": 5.7,
+            "International stocks": 8.5
+        },
+        "suggested_products": {}
+    },
+    "next_steps": [
+        "Start a SIP of ₹12,500 per month based on your income",
+        "Review your current investment portfolio compared to the suggested allocation",
+        "Focus on sip in balanced advantage, hybrid mf + elss as your primary investment strategy",
+        "Consider tax implications before making significant changes",
+        "Consult with a financial advisor for personalized advice",
+        "Set up automatic contributions to maximize long-term growth",
+        "Review and adjust your portfolio 1-2 times per year"
+    ],
+    "age_specific_advice": "Given your young age, you have a longer time horizon which allows for more risk-taking and recovery from market downturns. Focus on growth."
+}

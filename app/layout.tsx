@@ -28,7 +28,7 @@ export default function RootLayout({
 }
 
 export const metadata = {
-  title: "Financial Risk Assessment | Wealthy",
-  description: "Analyze your financial profile and get personalized risk assessment",
+  title: "Financial Goal Planner | Wealthy",
+  description: "Analyze your financial profile and get personalized financial goal planner",
   generator: 'v0.dev'
 };

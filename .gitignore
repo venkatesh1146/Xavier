@@ -9,3 +9,7 @@
 
 .DS_Store
 financial-risk-assessment.zip
+
+# Environment files
+.env.local
+.env

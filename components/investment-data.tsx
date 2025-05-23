@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { motion, AnimatePresence } from "framer-motion"
 import { Plus, Trash2, Briefcase, DollarSign, BarChart3, Clock, Building2, TrendingUp, Calendar, FileText, Shield, CircleDollarSign, ChevronDown, ChevronRight } from "lucide-react"
-import type { InvestmentAsset } from "./risk-assessment-form"
+import type { InvestmentAsset } from "@/types/investment"
 import { v4 as uuidv4 } from "uuid"
 
 interface InvestmentDataProps {
@@ -108,7 +108,7 @@ export default function InvestmentData({ investmentAssets, setInvestmentAssets }
         <h2 className="text-2xl font-bold">Investment Portfolio</h2>
       </div>
 
-      <p className="text-muted-foreground">Add your current investments to receive a comprehensive risk assessment.</p>
+      <p className="text-muted-foreground">Add your current investments to receive comprehensive goal planning.</p>
 
       {/* Portfolio summary */}
       {investmentAssets.length > 0 && (
@@ -258,9 +258,9 @@ export default function InvestmentData({ investmentAssets, setInvestmentAssets }
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.2, ease: "easeInOut" }}
-                            className="overflow-hidden"
+                            className="overflow-visible"
                           >
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-3 px-1">
                               <div className="space-y-2">
                                 <Label htmlFor={`asset-current-value-${asset.id}`} className="flex items-center gap-1">
                                   <CircleDollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Current Value (₹)
@@ -357,9 +357,9 @@ export default function InvestmentData({ investmentAssets, setInvestmentAssets }
                               animate={{ opacity: 1, height: "auto" }}
                               exit={{ opacity: 0, height: 0 }}
                               transition={{ duration: 0.2, ease: "easeInOut" }}
-                              className="overflow-hidden"
+                              className="overflow-visible"
                             >
-                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-3">
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-3 px-1">
                                 {isEquity(asset.asset_type) && (
                                   <>
                                     <div className="space-y-2">
@@ -462,7 +462,7 @@ export default function InvestmentData({ investmentAssets, setInvestmentAssets }
             </div>
             <h3 className="text-lg font-medium mb-2">No Assets Added</h3>
             <p className="text-muted-foreground mb-4 max-w-md mx-auto">
-              Add your investment assets to receive a comprehensive risk assessment and personalized recommendations.
+              Add your investment assets to receive comprehensive goal planning and personalized recommendations.
             </p>
             <Button onClick={addAsset} className="bg-primary hover:bg-primary/90 text-white">
               <Plus className="h-4 w-4 mr-2" /> Add Your First Asset

@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
@@ -11,11 +11,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { motion } from "framer-motion"
 import { DollarSign, Clock, Target, TrendingUp, Calendar, Banknote, TrendingDown, CircleDollarSign, AlertCircle } from "lucide-react"
-import type { FinancialProfile } from "./risk-assessment-form"
+import type { FinancialProfile } from "@/types/investment"
 
 interface PersonalProfileProps {
   financialProfile: FinancialProfile
   setFinancialProfile: React.Dispatch<React.SetStateAction<FinancialProfile>>
+  activeTab: string
 }
 
 const financialGoalOptions = [
@@ -32,8 +33,7 @@ const financialGoalOptions = [
   { id: "wealth_generation", label: "I am not sure" },
 ]
 
-export default function PersonalProfile({ financialProfile, setFinancialProfile }: PersonalProfileProps) {
-  const [activeTab, setActiveTab] = useState("basic")
+export default function PersonalProfile({ financialProfile, setFinancialProfile, activeTab }: PersonalProfileProps) {
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
 
   const validateField = (name: string, value: number | string) => {
@@ -81,7 +81,7 @@ export default function PersonalProfile({ financialProfile, setFinancialProfile 
       ? Number.parseInt(value) || 0
       : value
 
-    setFinancialProfile((prev) => ({
+    setFinancialProfile((prev: FinancialProfile) => ({
       ...prev,
       [name]: numericValue,
     }))
@@ -93,21 +93,21 @@ export default function PersonalProfile({ financialProfile, setFinancialProfile 
   }
 
   const handleRiskAppetiteChange = (value: string) => {
-    setFinancialProfile((prev) => ({
+    setFinancialProfile((prev: FinancialProfile) => ({
       ...prev,
       risk_appetite: value as "conservative" | "moderate" | "aggressive",
     }))
   }
 
   const handleInvestmentHorizonChange = (value: string) => {
-    setFinancialProfile((prev) => ({
+    setFinancialProfile((prev: FinancialProfile) => ({
       ...prev,
       investment_horizon: value as "short" | "medium" | "long",
     }))
   }
 
   const handleGoalToggle = (goalId: string) => {
-    setFinancialProfile((prev) => {
+    setFinancialProfile((prev: FinancialProfile) => {
       const currentGoals = [...prev.financial_goals]
 
       if (currentGoals.includes(goalId)) {
@@ -135,11 +135,11 @@ export default function PersonalProfile({ financialProfile, setFinancialProfile 
 
       <p className="text-muted-foreground">Let's start by understanding your financial situation and goals.</p>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} className="w-full">
         <TabsList className="grid grid-cols-3 mb-6">
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
           <TabsTrigger value="goals">Financial Goals</TabsTrigger>
-          <TabsTrigger value="risk">Risk Profile</TabsTrigger>
+          <TabsTrigger value="risk">Investment Profile</TabsTrigger>
         </TabsList>
 
         <TabsContent value="basic" className="space-y-6">
