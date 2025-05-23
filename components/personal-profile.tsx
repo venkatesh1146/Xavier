@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { motion } from "framer-motion"
-import { DollarSign, Clock, Target, TrendingUp } from "lucide-react"
+import { DollarSign, Clock, Target, TrendingUp, Calendar, Banknote, TrendingDown, CircleDollarSign, AlertCircle } from "lucide-react"
 import type { FinancialProfile } from "./risk-assessment-form"
 
 interface PersonalProfileProps {
@@ -19,54 +19,106 @@ interface PersonalProfileProps {
 }
 
 const financialGoalOptions = [
+  { id: "emergency_fund", label: "Emergency Funds" },
+  { id: "home", label: "Home loan down payment" },
+  { id: "education", label: "Higher Education" },
   { id: "retirement", label: "Retirement" },
-  { id: "house", label: "Buying a House" },
-  { id: "education", label: "Education" },
-  { id: "emergency", label: "Emergency Fund" },
-  { id: "wealth", label: "Wealth Creation" },
+  { id: "vacation", label: "Vacations" },
+  { id: "car", label: "Car" },
+  { id: "gadgets", label: "Electronic gadget / Clothes" },
+  { id: "marriage", label: "Marriage" },
+  { id: "kids_marriage", label: "Kid's marriage" },
+  { id: "kids_education", label: "Kid's education" },
+  { id: "wealth_generation", label: "I am not sure" },
 ]
 
 export default function PersonalProfile({ financialProfile, setFinancialProfile }: PersonalProfileProps) {
   const [activeTab, setActiveTab] = useState("basic")
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
+
+  const validateField = (name: string, value: number | string) => {
+    const errors: Record<string, string> = { ...validationErrors }
+
+    switch (name) {
+      case "age":
+        if (typeof value === "number" && (value < 18 || value > 120)) {
+          errors[name] = "Age must be between 18 and 120 years"
+        } else {
+          delete errors[name]
+        }
+        break
+      case "annual_income":
+        if (typeof value === "number" && value < 0) {
+          errors[name] = "Annual income cannot be negative"
+        } else {
+          delete errors[name]
+        }
+        break
+      case "monthly_expenses":
+        if (typeof value === "number" && value < 0) {
+          errors[name] = "Monthly expenses cannot be negative"
+        } else if (typeof value === "number" && financialProfile.annual_income && value * 12 > financialProfile.annual_income * 1.5) {
+          errors[name] = "Monthly expenses seem unusually high compared to income"
+        } else {
+          delete errors[name]
+        }
+        break
+      case "total_savings":
+        if (typeof value === "number" && value < 0) {
+          errors[name] = "Total savings cannot be negative"
+        } else {
+          delete errors[name]
+        }
+        break
+    }
+
+    setValidationErrors(errors)
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
+    const numericValue = name === "age" || name === "annual_income" || name === "total_savings" || name === "monthly_expenses"
+      ? Number.parseInt(value) || 0
+      : value
+
     setFinancialProfile((prev) => ({
       ...prev,
-      [name]:
-        name === "age" || name === "income" || name === "savings" || name === "expenses"
-          ? Number.parseInt(value) || 0
-          : value,
+      [name]: numericValue,
     }))
+
+    // Validate the field
+    if (typeof numericValue === "number") {
+      validateField(name, numericValue)
+    }
   }
 
   const handleRiskAppetiteChange = (value: string) => {
     setFinancialProfile((prev) => ({
       ...prev,
-      riskAppetite: value as "low" | "medium" | "high",
+      risk_appetite: value as "conservative" | "moderate" | "aggressive",
     }))
   }
 
   const handleInvestmentHorizonChange = (value: string) => {
     setFinancialProfile((prev) => ({
       ...prev,
-      investmentHorizon: value as "short" | "medium" | "long",
+      investment_horizon: value as "short" | "medium" | "long",
     }))
   }
 
   const handleGoalToggle = (goalId: string) => {
     setFinancialProfile((prev) => {
-      const currentGoals = [...prev.financialGoals]
+      const currentGoals = [...prev.financial_goals]
 
       if (currentGoals.includes(goalId)) {
         return {
           ...prev,
-          financialGoals: currentGoals.filter((id) => id !== goalId),
+          financial_goals: currentGoals.filter((id) => id !== goalId),
         }
       } else {
         return {
           ...prev,
-          financialGoals: [...currentGoals, goalId],
+          financial_goals: [...currentGoals, goalId],
         }
       }
     })
@@ -94,7 +146,10 @@ export default function PersonalProfile({ financialProfile, setFinancialProfile 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="age">Age</Label>
+                <Label htmlFor="age" className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  Age
+                </Label>
                 <Input
                   id="age"
                   name="age"
@@ -102,41 +157,78 @@ export default function PersonalProfile({ financialProfile, setFinancialProfile 
                   value={financialProfile.age}
                   onChange={handleInputChange}
                   min={18}
-                  max={100}
+                  max={120}
+                  className={validationErrors.age ? "border-red-500" : ""}
                 />
+                {validationErrors.age && (
+                  <div className="flex items-center gap-1 text-sm text-red-500">
+                    <AlertCircle className="h-3 w-3" />
+                    {validationErrors.age}
+                  </div>
+                )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="income">Annual Income (₹)</Label>
+                <Label htmlFor="annual_income" className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                  Annual Income (₹)
+                </Label>
                 <Input
-                  id="income"
-                  name="income"
+                  id="annual_income"
+                  name="annual_income"
                   type="number"
-                  value={financialProfile.income}
+                  value={financialProfile.annual_income}
                   onChange={handleInputChange}
                   min={0}
+                  className={validationErrors.annual_income ? "border-red-500" : ""}
                 />
+                {validationErrors.annual_income && (
+                  <div className="flex items-center gap-1 text-sm text-red-500">
+                    <AlertCircle className="h-3 w-3" />
+                    {validationErrors.annual_income}
+                  </div>
+                )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="savings">Total Savings (₹)</Label>
+                <Label htmlFor="total_savings" className="flex items-center gap-2">
+                  <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
+                  Total Savings (₹)
+                </Label>
                 <Input
-                  id="savings"
-                  name="savings"
+                  id="total_savings"
+                  name="total_savings"
                   type="number"
-                  value={financialProfile.savings}
+                  value={financialProfile.total_savings}
                   onChange={handleInputChange}
                   min={0}
+                  className={validationErrors.total_savings ? "border-red-500" : ""}
                 />
+                {validationErrors.total_savings && (
+                  <div className="flex items-center gap-1 text-sm text-red-500">
+                    <AlertCircle className="h-3 w-3" />
+                    {validationErrors.total_savings}
+                  </div>
+                )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="expenses">Monthly Expenses (₹)</Label>
+                <Label htmlFor="monthly_expenses" className="flex items-center gap-2">
+                  <TrendingDown className="h-4 w-4 text-muted-foreground" />
+                  Monthly Expenses (₹)
+                </Label>
                 <Input
-                  id="expenses"
-                  name="expenses"
+                  id="monthly_expenses"
+                  name="monthly_expenses"
                   type="number"
-                  value={financialProfile.expenses}
+                  value={financialProfile.monthly_expenses}
                   onChange={handleInputChange}
                   min={0}
+                  className={validationErrors.monthly_expenses ? "border-red-500" : ""}
                 />
+                {validationErrors.monthly_expenses && (
+                  <div className="flex items-center gap-1 text-sm text-red-500">
+                    <AlertCircle className="h-3 w-3" />
+                    {validationErrors.monthly_expenses}
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
@@ -157,12 +249,12 @@ export default function PersonalProfile({ financialProfile, setFinancialProfile 
                       <label
                         htmlFor={`goal-${goal.id}`}
                         className={`flex items-center space-x-3 p-4 cursor-pointer transition-colors ${
-                          financialProfile.financialGoals.includes(goal.id) ? "bg-primary/10 border-primary" : ""
+                          financialProfile.financial_goals.includes(goal.id) ? "bg-primary/10 border-primary" : ""
                         }`}
                       >
                         <Checkbox
                           id={`goal-${goal.id}`}
-                          checked={financialProfile.financialGoals.includes(goal.id)}
+                          checked={financialProfile.financial_goals.includes(goal.id)}
                           onCheckedChange={() => handleGoalToggle(goal.id)}
                           className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                         />
@@ -186,20 +278,20 @@ export default function PersonalProfile({ financialProfile, setFinancialProfile 
                 </div>
                 <p className="text-muted-foreground mb-4">How comfortable are you with financial risk?</p>
                 <RadioGroup
-                  value={financialProfile.riskAppetite}
+                  value={financialProfile.risk_appetite}
                   onValueChange={handleRiskAppetiteChange}
                   className="grid grid-cols-1 md:grid-cols-3 gap-4"
                 >
                   <Card
-                    className={`border ${financialProfile.riskAppetite === "low" ? "border-primary bg-primary/5" : ""}`}
+                    className={`border ${financialProfile.risk_appetite === "conservative" ? "border-primary bg-primary/5" : ""}`}
                   >
                     <CardContent className="p-4">
-                      <label htmlFor="risk-low" className="flex flex-col items-center space-y-2 cursor-pointer">
-                        <RadioGroupItem value="low" id="risk-low" className="sr-only" />
+                      <label htmlFor="risk-conservative" className="flex flex-col items-center space-y-2 cursor-pointer">
+                        <RadioGroupItem value="conservative" id="risk-conservative" className="sr-only" />
                         <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center mb-2">
                           <div className="h-6 w-6 rounded-full bg-green-500" />
                         </div>
-                        <span className="font-medium">Low Risk</span>
+                        <span className="font-medium">Conservative</span>
                         <p className="text-xs text-center text-muted-foreground">
                           Prefer stability and security over high returns
                         </p>
@@ -208,30 +300,30 @@ export default function PersonalProfile({ financialProfile, setFinancialProfile 
                   </Card>
 
                   <Card
-                    className={`border ${financialProfile.riskAppetite === "medium" ? "border-primary bg-primary/5" : ""}`}
+                    className={`border ${financialProfile.risk_appetite === "moderate" ? "border-primary bg-primary/5" : ""}`}
                   >
                     <CardContent className="p-4">
-                      <label htmlFor="risk-medium" className="flex flex-col items-center space-y-2 cursor-pointer">
-                        <RadioGroupItem value="medium" id="risk-medium" className="sr-only" />
+                      <label htmlFor="risk-moderate" className="flex flex-col items-center space-y-2 cursor-pointer">
+                        <RadioGroupItem value="moderate" id="risk-moderate" className="sr-only" />
                         <div className="h-12 w-12 rounded-full bg-yellow-100 flex items-center justify-center mb-2">
                           <div className="h-6 w-6 rounded-full bg-yellow-500" />
                         </div>
-                        <span className="font-medium">Medium Risk</span>
+                        <span className="font-medium">Moderate</span>
                         <p className="text-xs text-center text-muted-foreground">Balance between growth and security</p>
                       </label>
                     </CardContent>
                   </Card>
 
                   <Card
-                    className={`border ${financialProfile.riskAppetite === "high" ? "border-primary bg-primary/5" : ""}`}
+                    className={`border ${financialProfile.risk_appetite === "aggressive" ? "border-primary bg-primary/5" : ""}`}
                   >
                     <CardContent className="p-4">
-                      <label htmlFor="risk-high" className="flex flex-col items-center space-y-2 cursor-pointer">
-                        <RadioGroupItem value="high" id="risk-high" className="sr-only" />
+                      <label htmlFor="risk-aggressive" className="flex flex-col items-center space-y-2 cursor-pointer">
+                        <RadioGroupItem value="aggressive" id="risk-aggressive" className="sr-only" />
                         <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center mb-2">
                           <div className="h-6 w-6 rounded-full bg-red-500" />
                         </div>
-                        <span className="font-medium">High Risk</span>
+                        <span className="font-medium">Aggressive</span>
                         <p className="text-xs text-center text-muted-foreground">
                           Willing to accept volatility for higher returns
                         </p>
@@ -248,12 +340,12 @@ export default function PersonalProfile({ financialProfile, setFinancialProfile 
                 </div>
                 <p className="text-muted-foreground mb-4">How long do you plan to invest before needing the funds?</p>
                 <RadioGroup
-                  value={financialProfile.investmentHorizon}
+                  value={financialProfile.investment_horizon}
                   onValueChange={handleInvestmentHorizonChange}
                   className="grid grid-cols-1 md:grid-cols-3 gap-4"
                 >
                   <Card
-                    className={`border ${financialProfile.investmentHorizon === "short" ? "border-primary bg-primary/5" : ""}`}
+                    className={`border ${financialProfile.investment_horizon === "short" ? "border-primary bg-primary/5" : ""}`}
                   >
                     <CardContent className="p-4">
                       <label htmlFor="horizon-short" className="flex flex-col items-center space-y-2 cursor-pointer">
@@ -265,7 +357,7 @@ export default function PersonalProfile({ financialProfile, setFinancialProfile 
                   </Card>
 
                   <Card
-                    className={`border ${financialProfile.investmentHorizon === "medium" ? "border-primary bg-primary/5" : ""}`}
+                    className={`border ${financialProfile.investment_horizon === "medium" ? "border-primary bg-primary/5" : ""}`}
                   >
                     <CardContent className="p-4">
                       <label htmlFor="horizon-medium" className="flex flex-col items-center space-y-2 cursor-pointer">
@@ -277,7 +369,7 @@ export default function PersonalProfile({ financialProfile, setFinancialProfile 
                   </Card>
 
                   <Card
-                    className={`border ${financialProfile.investmentHorizon === "long" ? "border-primary bg-primary/5" : ""}`}
+                    className={`border ${financialProfile.investment_horizon === "long" ? "border-primary bg-primary/5" : ""}`}
                   >
                     <CardContent className="p-4">
                       <label htmlFor="horizon-long" className="flex flex-col items-center space-y-2 cursor-pointer">

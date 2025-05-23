@@ -21,28 +21,41 @@ const STEPS = [
 // Define the types for our form data
 export type FinancialProfile = {
   age: number
-  income: number
-  savings: number
-  expenses: number
-  riskAppetite: "low" | "medium" | "high"
-  financialGoals: string[]
-  investmentHorizon: "short" | "medium" | "long"
+  annual_income: number
+  monthly_expenses: number
+  total_savings: number
+  risk_appetite: "conservative" | "moderate" | "aggressive"
+  financial_goals: string[]
+  investment_horizon: "short" | "medium" | "long"
 }
 
 export type InvestmentAsset = {
   id: string
-  type: string
+  asset_type: string
   name: string
-  value: number
-  expectedReturn: number
-  tenure: number
+  amount: number // Initial investment amount
+  expected_returns?: number // Optional - Expected annual returns as percentage
+  current_value?: number // Optional - Current value if different from initial investment
+  purchase_date?: string // Optional - When the asset was acquired
+  tenure?: number // Optional - How long the asset has been held or investment duration
+  risk_category?: string // Optional - User's assessment of the asset's risk
+  additional_notes?: string // Optional - Any other relevant information
+  
+  // Asset-specific fields
+  company_name?: string // For stocks
+  shares?: number // For stocks
+  purchase_price?: number // For stocks
+  dividend_yield?: number // For stocks
+  property_type?: string // For real estate
+  rental_income?: number // For real estate
+  mortgage_details?: string // For real estate
 }
 
 // Update the RiskAssessmentResult type to include optional HTML
 export type RiskAssessmentResult = {
   riskScore?: number
   riskCategory?: "Conservative" | "Moderate" | "Aggressive"
-  recommendations?: {
+  recommendations?: { 
     assetAllocation: {
       equity: number
       debt: number
@@ -67,21 +80,22 @@ export default function RiskAssessmentForm() {
   // Update the initial state for financial profile with Indian currency values
   const [financialProfile, setFinancialProfile] = useState<FinancialProfile>({
     age: 30,
-    income: 1200000, // ₹12 lakhs per annum
-    savings: 500000, // ₹5 lakhs
-    expenses: 40000, // ₹40,000 per month
-    riskAppetite: "medium",
-    financialGoals: ["retirement"],
-    investmentHorizon: "medium",
+    annual_income: 1200000, // ₹12 lakhs per annum
+    monthly_expenses: 40000, // ₹40,000 per month
+    total_savings: 500000, // ₹5 lakhs
+    risk_appetite: "moderate",
+    financial_goals: ["retirement"],
+    investment_horizon: "medium",
   })
   // Update the initial state for investment assets with Indian currency values
   const [investmentAssets, setInvestmentAssets] = useState<InvestmentAsset[]>([
     {
       id: "1",
-      type: "Equity",
+      asset_type: "Equities (Stocks)",
       name: "Stock Portfolio",
-      value: 250000, // ₹2.5 lakhs
-      expectedReturn: 12,
+      amount: 250000, // ₹2.5 lakhs
+      expected_returns: 12,
+      current_value: 280000, // ₹2.8 lakhs
       tenure: 5,
     },
   ])
@@ -90,11 +104,55 @@ export default function RiskAssessmentForm() {
 
   const progress = ((currentStep + 1) / STEPS.length) * 100
 
+  // Validation function to check required fields
+  const validatePersonalProfile = (profile: FinancialProfile): string[] => {
+    const missingFields: string[] = []
+    const issues: string[] = []
+
+
+    if (!profile.age) missingFields.push("Age")
+    if (!profile.annual_income) missingFields.push("Annual Income")
+    if (!profile.monthly_expenses && profile.monthly_expenses !== 0) missingFields.push("Monthly Expenses")
+    if (!profile.total_savings && profile.total_savings !== 0) missingFields.push("Total Savings")
+    if (!profile.financial_goals || profile.financial_goals.length === 0) missingFields.push("Financial Goals")
+    if (!profile.risk_appetite) missingFields.push("Risk Appetite")
+
+    // Validate data integrity
+    if (profile.age && (profile.age < 18 || profile.age > 120)) {
+      issues.push("Age must be between 18 and 120 years")
+    }
+    
+    if (profile.annual_income && profile.annual_income < 0) {
+      issues.push("Annual income cannot be negative")
+    }
+    
+    if (profile.monthly_expenses && profile.monthly_expenses < 0) {
+      issues.push("Monthly expenses cannot be negative")
+    }
+    
+    if (profile.monthly_expenses && profile.annual_income && profile.monthly_expenses * 12 > profile.annual_income * 1.5) {
+      issues.push("Monthly expenses seem unusually high compared to income")
+    }
+    
+    if (profile.total_savings !== undefined && profile.total_savings < 0) {
+      issues.push("Total savings cannot be negative")
+    }
+
+    return [...missingFields.map(field => `${field} is required`), ...issues]
+  }
 
   // Update the handleNext function to use the async API call
   const handleNext = async () => {
     if (currentStep < STEPS.length - 1) {
-      if (currentStep === 1) {
+      if (currentStep === 0) {
+        // Validate personal profile before proceeding
+        const validationErrors = validatePersonalProfile(financialProfile)
+        if (validationErrors.length > 0) {
+          alert(`Please fix the following issues before proceeding:\n\n${validationErrors.join('\n')}`)
+          return
+        }
+        setCurrentStep(currentStep + 1)
+      } else if (currentStep === 1) {
         // Process before showing results
         setIsProcessing(true)
         try {
@@ -135,22 +193,42 @@ export default function RiskAssessmentForm() {
     // Simulate API call
     return new Promise((resolve) => {
       setTimeout(() => {
+        // Prepare data for backend API
+        const apiPayload = {
+          age: profile.age,
+          annual_income: profile.annual_income,
+          monthly_expenses: profile.monthly_expenses,
+          total_savings: profile.total_savings,
+          financial_goals: profile.financial_goals.join(", "), // Convert array to string description
+          risk_appetite: profile.risk_appetite,
+          // Note: investment_horizon is not required by backend but can be included
+          investment_horizon: profile.investment_horizon,
+          // Investment assets data
+          investment_assets: assets,
+        }
+
+        console.log("API Payload:", apiPayload)
+        
         // This would be replaced with actual API call
-        // Example: const response = await fetch('/api/risk-assessment', { method: 'POST', body: JSON.stringify({ profile, assets }) });
+        // Example: const response = await fetch('/api/risk-assessment', { 
+        //   method: 'POST', 
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify(apiPayload) 
+        // });
 
         // Mock response data
         let baseScore = 50
 
         // Adjust based on risk appetite
-        if (profile.riskAppetite === "low") baseScore -= 15
-        if (profile.riskAppetite === "high") baseScore += 15
+        if (profile.risk_appetite === "conservative") baseScore -= 15
+        if (profile.risk_appetite === "aggressive") baseScore += 15
 
         // Adjust based on age (younger = higher risk tolerance)
         baseScore += Math.max(0, (40 - profile.age) / 2)
 
         // Adjust based on investment horizon
-        if (profile.investmentHorizon === "short") baseScore -= 10
-        if (profile.investmentHorizon === "long") baseScore += 10
+        if (profile.investment_horizon === "short") baseScore -= 10
+        if (profile.investment_horizon === "long") baseScore += 10
 
         // Ensure score is between 0-100
         const riskScore = Math.min(100, Math.max(0, baseScore))
